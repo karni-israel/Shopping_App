@@ -1,34 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Request } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Orders')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  @ApiOperation({ summary: 'ביצוע הזמנה (Checkout) מהעגלה הנוכחית' })
+  create(@Request() req) {
+    return this.orderService.create(req.user.userId);
   }
 
   @Get()
-  findAll() {
-    return this.orderService.findAll();
+  @ApiOperation({ summary: 'קבלת היסטוריית הזמנות' })
+  findAll(@Request() req) {
+    return this.orderService.findAll(req.user.userId);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'קבלת פרטי הזמנה ספציפית' })
   findOne(@Param('id') id: string) {
     return this.orderService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
   }
 }

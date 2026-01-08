@@ -1,20 +1,24 @@
-import e from "express";
-import { CartItem } from "src/cart-item/entities/cart-item.entity";
-import { User } from "src/users/entities/user.entity";
-import { ManyToOne,OneToOne,Column,Entity,PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, OneToOne, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
+import { CartItem } from '../../cart-item/entities/cart-item.entity';
 
 @Entity('carts')
 export class Cart {
-    @PrimaryGeneratedColumn()
-    cart_id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    created_at: Date;
+  // קישור למשתמש (עגלה אחת למשתמש אחד)
+  @OneToOne(() => User, (user) => user.carts)
+  @JoinColumn()
+  user: User;
 
-    
-    @OneToOne(() => User, (user) => user.carts)
-    user: User;
+  // קישור לפריטים (עגלה אחת מכילה הרבה פריטים)
+  @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
+  items: CartItem[];
 
-    @OneToMany(() => CartItem, (cart_item)  => cart_item.cart)
-    cart_items: CartItem[];
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -1,31 +1,32 @@
-import { Order_item } from "src/order-item/entities/order-item.entity";
-import { Column, Entity, OneToMany } from "typeorm";
-import { PrimaryGeneratedColumn } from "typeorm";
-import { CartItem } from "src/cart-item/entities/cart-item.entity";
-
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { OrderItem } from '../../order-item/entities/order-item.entity';
 
 @Entity('products')
 export class Product {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    product_id: number;
+  @Column()
+  name: string;
 
+  @Column({ type: 'text', nullable: true })
+  description: string;
 
-    @Column()
-    name: string;
+  @Column('decimal', { precision: 10, scale: 2 }) // דיוק למחירים (למשל 99.90)
+  price: number;
 
-    @Column()
-    description: string;
+  @Column({ nullable: true })
+  imageUrl: string;
 
-    @Column()
-    price: number;
+  @Column({ default: 0 })
+  stock: number; // מלאי
 
-    @Column()
-    stock: number;
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
+  order_items: OrderItem[];
 
-    @OneToMany(() => CartItem, (cart_item) => cart_item.product)
-    cart_items: CartItem[];
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @OneToMany(() => Order_item, (order_item) => order_item.product)
-    order_items: Order_item[];
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

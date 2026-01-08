@@ -1,23 +1,21 @@
-import { Entity } from "typeorm";
-import { Order } from "src/order/entities/order.entity";
-import { ManyToOne, Column, PrimaryGeneratedColumn} from "typeorm";
-import { Product } from "src/product/entities/product.entity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Order } from '../../order/entities/order.entity';
+import { Product } from '../../product/entities/product.entity';
 
 @Entity('order_items')
-export class Order_item {
+export class OrderItem {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    order_item_id: number;
+  @Column()
+  quantity: number;
 
-    @Column()
-    quantity: number;
+  @Column('decimal', { precision: 10, scale: 2 })
+  price: number;
 
-    @Column()
-    price: number;
+  @ManyToOne(() => Order, (order) => order.items, { onDelete: 'CASCADE' })
+  order: Order;
 
-    @ManyToOne(() => Order, (order) => order.order_items)
-    order: Order;
-
-    @ManyToOne(() => Product, (product) => product.order_items)
-    product: Product;
+  @ManyToOne(() => Product, (product) => product.order_items)
+  product: Product;
 }
