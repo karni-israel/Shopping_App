@@ -5,7 +5,7 @@ import { Exclude } from 'class-transformer'; // <--- 1. הוספת הייבוא
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn() // יוצר עמודת ID אוטומטית
   id: number;
 
   @Column({ unique: true })
