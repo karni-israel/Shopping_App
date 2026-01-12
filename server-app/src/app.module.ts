@@ -10,7 +10,7 @@ import { CartItemModule } from './cart-item/cart-item.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { ProductModule } from './product/product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-// ... שאר הייבואים שלך (Cart, Order וכו')
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -23,12 +23,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('DATABASE_HOST'),
-        port: configService.get('DATABASE_PORT'),
-        username: configService.get('DATABASE_USER'),
-        password: configService.get('DATABASE_PASSWORD'),
-        database: configService.get('DATABASE_NAME'),
-        synchronize: true,
+        host: configService.get('DATABASE_HOST') || 'localhost',
+        port: configService.get('DATABASE_PORT') || 5432,
+        username: configService.get('DATABASE_USER') || 'postgres',
+        password: configService.get('DATABASE_PASSWORD') || 'postgres',
+        database: configService.get('DATABASE_NAME') || 'shopping_app',
+        // מונע מחיקת נתונים בסביבת ייצור (Production)
+        synchronize: configService.get('NODE_ENV') !== 'production',
         logging: false,
         autoLoadEntities: true
       }),

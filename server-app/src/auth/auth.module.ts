@@ -7,10 +7,11 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
   imports: [
-    UsersModule, // זה קיים וזה מצוין
+    UsersModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -27,7 +28,8 @@ import { LocalStrategy } from './strategies/local.strategy';
   providers: [
     AuthService, 
     JwtStrategy, 
-    LocalStrategy // <--- 2. חובה להוסיף כאן כדי שה-Login יעבוד!
+    LocalStrategy,
+    GoogleStrategy // <--- חובה להוסיף כאן כדי שההתחברות עם גוגל תעבוד!
   ],
   exports: [AuthService],
 })

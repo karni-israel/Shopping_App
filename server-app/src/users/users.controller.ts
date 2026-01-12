@@ -15,8 +15,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { User } from './entities/user.entity';
 
 @ApiTags('Users Management') // כותרת יפה בסוואגר
 @Controller('users')
@@ -27,18 +28,21 @@ export class UsersController {
 
   @Post()
   @ApiOperation({ summary: 'יצירת משתמש חדש (Admin)' })
+  @ApiResponse({ status: 201, type: User })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'קבלת רשימת כל המשתמשים' })
+  @ApiResponse({ status: 200, type: [User] })
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'קבלת משתמש ספצי לפי ID' })
+  @ApiResponse({ status: 200, type: User })
   // ParseIntPipe - הופך אוטומטית את הטקסט למספר ומונע את השגיאה שהייתה לך!
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
@@ -46,6 +50,7 @@ export class UsersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'עדכון פרטי משתמש' })
+  @ApiResponse({ status: 200, type: User })
   update(
     @Param('id', ParseIntPipe) id: number, 
     @Body() updateUserDto: UpdateUserDto
@@ -55,6 +60,7 @@ export class UsersController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'מחיקת משתמש' })
+  @ApiResponse({ status: 200, type: User })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }

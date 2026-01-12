@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Request, Delete } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -26,5 +26,11 @@ export class OrderController {
   @ApiOperation({ summary: 'קבלת פרטי הזמנה ספציפית' })
   findOne(@Param('id') id: string) {
     return this.orderService.findOne(+id);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'מחיקת הזמנה מההיסטוריה' })
+  remove(@Param('id') id: string, @Request() req) {
+    return this.orderService.remove(+id, req.user.userId);
   }
 }

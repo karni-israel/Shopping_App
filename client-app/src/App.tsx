@@ -1,0 +1,28 @@
+import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { LoginPage } from './pages/LoginPage';
+import { HomePage } from './pages/HomePage';
+import { CartPage } from './pages/CartPage';
+import { OrderHistoryPage } from './pages/OrderHistoryPage';
+import { useAuth } from './context/AuthContext';
+
+function App() {
+  const { user, loading } = useAuth();
+
+  if (loading) return <p>טוען...</p>;
+
+  return (
+    <BrowserRouter>
+      <div className="app-container">
+        <Routes>
+          <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
+          <Route path="/" element={user ? <HomePage /> : <Navigate to="/login" />} />
+          <Route path="/cart" element={user ? <CartPage /> : <Navigate to="/login" />} />
+          <Route path="/orders" element={user ? <OrderHistoryPage /> : <Navigate to="/login" />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  )
+}
+
+export default App

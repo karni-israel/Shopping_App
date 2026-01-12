@@ -10,7 +10,7 @@ async function bootstrap() {
 
   // הגדרת CORS - חובה כדי לעבוד עם React ו-Cookies
   app.enableCors({
-    origin: 'http://localhost:5173', // הכתובת של ה-Frontend שלך (למשל Vite)
+    origin: true, // מאפשר לכל מקור לגשת (פותר בעיות CORS בפיתוח)
     credentials: true, // חובה! מאפשר שליחת Cookies
   });
 
@@ -29,11 +29,11 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-    
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`Application is running on: ${await app.getUrl()}/api`);
+  console.log(`Application is running on: http://localhost:${process.env.PORT ?? 3000}/api`);
 }
 bootstrap();
