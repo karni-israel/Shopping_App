@@ -16,14 +16,39 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  // --- 1. פונקציות עזר לאימות (Auth) ---
+ async findByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
+  }
 
   async findByUsername(username: string): Promise<User | null> {
     return this.usersRepository.findOne({ where: { username } });
   }
 
-  // --- 2. יצירת משתמש (Create) ---
-  
+  async findOrCreateOAuthUser(email: string, provider: string, profile: any): Promise<User> {
+    let user = await this.findByEmail(email);
+
+    if (user) {
+      // Update provider ID if missing
+      if (provider === 'google' && !user.googleId) {
+        user.googleId = profile.id;
+        await this.usersRepository.save(user);
+      }
+      return user;
+    }
+
+    // Create new OAuth user
+    const newUser = this.usersRepository.create({
+      email,
+      username: email,
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      picture: profile.picture,
+      provider,
+      googleId: provider === 'google' ? profile.id : null,
+    });
+
+    return this.usersRepository.save(newUser);
+  }
  async create(createUserDto: CreateUserDto): Promise<User> {
     const { password, username } = createUserDto;
 
