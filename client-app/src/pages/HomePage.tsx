@@ -117,7 +117,14 @@ export const HomePage = () => {
   return (
     <div className="container-fluid" style={{ padding: '20px' }}>
       <div className="row">
-        <div className="col-12 col-md-3 col-lg-2 mb-4">
+           <div className="card mb-4">
+            <div className="card-body">
+              <h2>שלום, {user?.username || 'אורח'} 👋</h2>
+              <p className="text-muted">בחר מוצר והוסף לעגלה</p>
+            </div>
+          </div>
+
+        <div className="col-12 col-md-2 col-lg-3 mb-4">
           <CategoryFilter onSelectCategory={setSelectedCategory} />
           <div className="d-grid gap-2">
             <button onClick={addDemoProducts} className="btn btn-info">
@@ -129,13 +136,8 @@ export const HomePage = () => {
           </div>
         </div>
 
-        <div className="col-12 col-md-9 col-lg-10">
-          <div className="card mb-4">
-            <div className="card-body">
-              <h2>שלום, {user?.username || 'אורח'} 👋</h2>
-              <p className="text-muted">בחר מוצר והוסף לעגלה</p>
-            </div>
-          </div>
+        <div className="col-12 col-md-10 col-lg-9">
+       
 
           {filteredProducts.length === 0 ? (
             <div className="alert alert-info text-center py-5">
@@ -144,7 +146,7 @@ export const HomePage = () => {
           ) : (
             <div className="row g-3">
               {filteredProducts.map((product) => (
-                <div key={product.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div key={product.id} className="col-12 col-sm-6 col-md-3 col-lg-3">
                   <div className="card h-100 shadow-sm">
                     <div className="position-relative overflow-hidden" style={{ height: '200px' }}>
                       {product.imageUrl ? (
