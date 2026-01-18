@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 export const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,22 +16,20 @@ export const LoginPage = () => {
     try {
       await login({ username, password });
       navigate('/');
-    } catch (err) {
-      setError('שם משתמש או סיסמה שגויים');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'שם משתמש או סיסמה שגויים');
     } finally {
       setLoading(false);
     }
   };
 
   const handleRegister = async () => {
-    const { register } = useAuth();
     setLoading(true);
     try {
       await register({ username, password, email: `${username}@test.com` });
-      await login({ username, password });
       navigate('/');
-    } catch (err) {
-      setError('שגיאה בהרשמה');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'שגיאה בהרשמה (אולי הסיסמה קצרה מדי?)');
     } finally {
       setLoading(false);
     }
@@ -82,6 +80,15 @@ export const LoginPage = () => {
           <button onClick={handleRegister} className="btn btn-outline-secondary w-100" disabled={loading}>
             {loading ? 'טוען...' : 'הרשמה'}
           </button>
+
+          <div className="text-center my-2 text-muted">או</div>
+
+          <a 
+            href="http://localhost:3000/auth/google"
+            className="btn btn-danger w-100 text-decoration-none"
+          >
+            לחץ כאן להתחברות עם google
+          </a>
 
           <p className="text-muted text-center mt-3 small">לבדיקה: testuser / 123456</p>
         </div>

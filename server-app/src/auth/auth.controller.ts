@@ -5,7 +5,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-import { AuthGuard } from '@nestjs/passport'; // <--- ייבוא נדרש עבור גוגל
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
@@ -17,8 +17,16 @@ export class AuthController {
   // נתיב פתוח לכולם - הרשמה
   @Post('register')
   @ApiOperation({ summary: 'הרשמה למערכת (פתוח לכולם)' })
-  async register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.register(createUserDto);
+  async register(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) response: Response) {
+    const result = await this.authService.register(createUserDto);
+    // שמירת הטוקן ב-Cookie גם בהרשמה
+    response.cookie('access_token', result.access_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    return result;
   }
 
   // נתיב התחברות (דורש שם וסיסמה)
@@ -43,14 +51,14 @@ export class AuthController {
   // --- התחברות עם גוגל ---
 
   @Get('google')
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   @ApiOperation({ summary: 'התחלת תהליך התחברות עם גוגל' })
   async googleAuth(@Request() req) {
     // הפונקציה הזו מפעילה את ה-Guard של גוגל ומעבירה את המשתמש לדף ההתחברות של גוגל
   }
 
   @Get('google/callback')
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   @ApiOperation({ summary: 'חזרה מגוגל, יצירת טוקן והפניה לאתר' })
   async googleAuthRedirect(@Request() req, @Res({ passthrough: true }) response: Response) {
     // קבלת הטוקן מה-Service (שכבר יצר/מצא את המשתמש)
