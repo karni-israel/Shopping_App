@@ -8,15 +8,32 @@ export class User {
   @PrimaryGeneratedColumn() // יוצר עמודת ID אוטומטית
   id: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true})
   username: string;
 
-  @Column()
+  
+  @Column({ unique: true })
   email: string;
 
-  @Column()
-  @Exclude() // <--- 2. הוספת הדקורטור שמסתיר את הסיסמה
+  
+   @Column({ nullable: true })
+  @Exclude() // <--- 2. ׳”׳•׳¡׳₪׳× ׳”׳“׳§׳•׳¨׳˜׳•׳¨ ׳©׳׳¡׳×׳™׳¨ ׳׳× ׳”׳¡׳™׳¡׳׳”
   password: string;
+
+  @Column({ nullable: true })
+  firstName: string;
+
+  @Column({ nullable: true })
+  lastName: string;
+
+  @Column({ nullable: true })
+  picture: string;
+
+  @Column({ nullable: true })
+  googleId: string;
+
+  @Column({ default: 'local' })
+  provider: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -8,38 +8,84 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await login({ username, password });
-      navigate('/'); // מעבר לדף הבית אחרי התחברות
+      navigate('/');
     } catch (err) {
       setError('שם משתמש או סיסמה שגויים');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async () => {
+    const { register } = useAuth();
+    setLoading(true);
+    try {
+      await register({ username, password, email: `${username}@test.com` });
+      await login({ username, password });
+      navigate('/');
+    } catch (err) {
+      setError('שגיאה בהרשמה');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '300px', margin: '50px auto', textAlign: 'center' }}>
-      <h2>התחברות</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <input
-          type="text"
-          placeholder="שם משתמש"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          style={{ padding: '8px' }}
-        />
-        <input
-          type="password"
-          placeholder="סיסמה"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: '8px' }}
-        />
-        <button type="submit" style={{ padding: '10px', cursor: 'pointer' }}>התחבר</button>
-      </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
+      <div className="card shadow-lg" style={{ width: '100%', maxWidth: '400px' }}>
+        <div className="card-body p-5">
+          <h2 className="card-title text-center mb-4">🛍️ חנות קניות</h2>
+          
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">שם משתמש</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="הכנס שם משתמש"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="form-label">סיסמה</label>
+              <input
+                type="password"
+                className="form-control"
+                placeholder="הכנס סיסמה"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary w-100 mb-2" disabled={loading}>
+              {loading ? 'טוען...' : 'התחבר'}
+            </button>
+          </form>
+
+          <button onClick={handleRegister} className="btn btn-outline-secondary w-100" disabled={loading}>
+            {loading ? 'טוען...' : 'הרשמה'}
+          </button>
+
+          <p className="text-muted text-center mt-3 small">לבדיקה: testuser / 123456</p>
+        </div>
+      </div>
     </div>
   );
 };

@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // בדיקה האם המשתמש מחובר בעת טעינת האתר
   useEffect(() => {
     checkUser();
   }, []);
@@ -31,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { data } = await api.get('/auth/profile');
       setUser(data);
-    } catch (error) {
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
@@ -39,17 +38,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = async (credentials: any) => {
-    await api.post('/auth/login', credentials);
-    await checkUser(); // רענון פרטי המשתמש
+    const { data } = await api.post('/auth/login', credentials);
+    if (data.access_token) {
+      localStorage.setItem('token', data.access_token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
+    }
+    await checkUser();
   };
 
   const register = async (data: any) => {
-    await api.post('/auth/register', data);
+    const response = await api.post('/auth/register', data);
+    if (response.data.access_token) {
+      localStorage.setItem('token', response.data.access_token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
+    }
     await checkUser();
   };
 
   const logout = async () => {
-    await api.post('/auth/logout');
+    try {
+      await api.post('/auth/logout');
+    } catch {
+      // ignore error
+    }
+    localStorage.removeItem('token');
+    delete api.defaults.headers.common['Authorization'];
     setUser(null);
   };
 
