@@ -10,7 +10,7 @@ async function bootstrap() {
 
   // הגדרת CORS - חובה כדי לעבוד עם React ו-Cookies
   app.enableCors({
-    origin: true, // מאפשר לכל מקור לגשת (פותר בעיות CORS בפיתוח)
+    origin: 'http://localhost:5173', // הכתובת של הריאקט שלי
     credentials: true, // חובה! מאפשר שליחת Cookies
   });
 

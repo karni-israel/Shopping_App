@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService} from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core'; // 👈 ייבוא חשוב
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'; // 👈 ייבוא המגן
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
@@ -10,12 +12,17 @@ import { CartItemModule } from './cart-item/cart-item.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { ProductModule } from './product/product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
+    // 👇 הגדרת המגן: מקסימום 60 בקשות בדקה (60000 מילי-שניות) לכל משתמש
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 60,
+    }]),
+
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -27,11 +34,7 @@ import { User } from './users/entities/user.entity';
         username: configService.get('DATABASE_USER') || 'postgres',
         password: configService.get('DATABASE_PASSWORD') || 'postgres',
         database: configService.get('DATABASE_NAME') || 'shopping_app',
-        
-        // במצב פיתוח אנחנו משאירים את זה true כדי שיעדכן טבלאות, 
-        // אבל מחקתי את dropSchema כדי שלא ימחק נתונים!
         synchronize: configService.get('NODE_ENV') !== 'production',
-        
         logging: false,
         autoLoadEntities: true
       }),
@@ -45,6 +48,13 @@ import { User } from './users/entities/user.entity';
     ProductModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // 👇 הפעלת המגן על כל האפליקציה
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
