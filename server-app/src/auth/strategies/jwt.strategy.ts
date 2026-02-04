@@ -6,26 +6,38 @@ import { Request } from 'express';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService) {
-    super({
-      // שינוי: קריאת הטוקן מה-Cookie במקום מה-Header
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          let token = null;
-          if (request && request.cookies) {
-            token = request.cookies['access_token'];
-          }
-          return token;
-        },
-      ]),
-      ignoreExpiration: false, // לא מאשר טוקן שפג תוקפו
-      secretOrKey: configService.get<string>('JWT_SECRET') || 'default_secret_key', // מונע שגיאת טיפוסים במקרה שהמשתנה לא נמצא
-    });
-  }
+  // בתוך jwt.strategy.ts
 
+constructor(private configService: ConfigService) {
+  super({
+    jwtFromRequest: ExtractJwt.fromExtractors([
+      (request: Request) => {
+        // 👇 התיקון כאן: הגדרנו בפירוש שזה יכול להיות string או null
+        let token: string | null = null;
+        
+        if (request && request.cookies) {
+          token = request.cookies['access_token'];
+        }
+        
+        // אם לא מצאנו בקוקיז, ננסה מה-Header (גיבוי)
+        if (!token) {
+           token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+        }
+        
+        return token;
+      },
+    ]),
+    ignoreExpiration: false,
+    secretOrKey: configService.get<string>('JWT_SECRET') || 'default_secret_key',
+  });
+}
 
   async validate(payload: any) {
-    // מחזיר את המידע שיש בתוך הטוקן לתוך האובייקט req.user
-    return { userId: payload.sub, username: payload.username };
+    // 👇 התיקון הקריטי: הוספנו את ה-role לרשימה שחוזרת
+    return { 
+      userId: payload.sub, 
+      username: payload.username,
+      role: payload.role // <--- שורה זו הייתה חסרה!
+    };
   }
 }

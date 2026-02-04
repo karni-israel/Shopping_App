@@ -10,7 +10,7 @@ import {
   Param, 
   Delete, 
   UseGuards, 
-  ParseIntPipe 
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,6 +27,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+
   @ApiOperation({ summary: 'יצירת משתמש חדש (Admin)' })
   @ApiResponse({ status: 201, type: User })
   create(@Body() createUserDto: CreateUserDto) {

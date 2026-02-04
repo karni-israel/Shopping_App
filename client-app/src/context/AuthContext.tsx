@@ -2,10 +2,12 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import api from '../services/api';
 
+// 👇 1. הוספתי את השדה role
 interface User {
   id: number;
   username: string;
   email: string;
+  role: string; // חובה כדי לדעת אם זה אדמין
 }
 
 interface AuthContextType {

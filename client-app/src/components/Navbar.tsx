@@ -5,6 +5,8 @@ export function Navbar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
+  console.log("User Info:", user);
+
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -33,6 +35,20 @@ export function Navbar() {
                     🏠 בית
                   </a>
                 </li>
+
+                {/* 👇 כפתור הניהול - מופיע רק לאדמין! */}
+                {user.role === 'ADMIN' && (
+                  <li className="nav-item">
+                    <a 
+                      className="nav-link text-warning fw-bold" 
+                      onClick={() => navigate('/admin')} 
+                      style={{ cursor: 'pointer' }}
+                    >
+                      ⚙️ ניהול
+                    </a>
+                  </li>
+                )}
+
                 <li className="nav-item">
                   <a className="nav-link" onClick={() => navigate('/cart')} style={{ cursor: 'pointer' }}>
                     🛒 עגלה

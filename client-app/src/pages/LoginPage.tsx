@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
+import {Eye, EyeSlash} from 'react-bootstrap-icons';
 export const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
   const { login, register } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState('');
@@ -35,6 +37,11 @@ export const LoginPage = () => {
     }
   };
 
+  const toggleShowPasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+
   return (
     <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <div className="card shadow-lg" style={{ width: '100%', maxWidth: '400px' }}>
@@ -61,15 +68,25 @@ export const LoginPage = () => {
             </div>
 
             <div className="mb-4">
-              <label className="form-label">סיסמה</label>
+              <label className="form-label">סיסמה🗝️</label>
+              <div className="input-group">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="form-control"
                 placeholder="הכנס סיסמה"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <button 
+                type="button" 
+                className="btn btn-outline-secondary"
+                onClick={toggleShowPasswordVisibility}
+                style={{ borderLeft: 'none' }}
+              >
+                {showPassword ? <EyeSlash /> : <Eye />}
+              </button>
+              </div>
             </div>
 
             <button type="submit" className="btn btn-primary w-100 mb-2" disabled={loading}>
@@ -78,7 +95,7 @@ export const LoginPage = () => {
           </form>
 
           <button onClick={handleRegister} className="btn btn-outline-secondary w-100" disabled={loading}>
-            {loading ? 'טוען...' : 'הרשמה'}
+            {loading ? 'טוען...' : 'הרשמה (משתמש חדש)'}
           </button>
 
           <div className="text-center my-2 text-muted">או</div>
@@ -88,9 +105,8 @@ export const LoginPage = () => {
             className="btn btn-danger w-100 text-decoration-none"
           >
             לחץ כאן להתחברות עם google
-          </a>
 
-          <p className="text-muted text-center mt-3 small">לבדיקה: testuser / 123456</p>
+          </a>
         </div>
       </div>
     </div>

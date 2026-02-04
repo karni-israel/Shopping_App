@@ -20,7 +20,10 @@ export class Product {
 
   @Column({ default: 0 })
   stock: number; // מלאי
-
+  
+@Column({ nullable: true })
+  categoryId: number;
+  
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
   order_items: OrderItem[];
 

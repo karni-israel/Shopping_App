@@ -15,6 +15,6 @@ export class CartItem {
   cart: Cart;
 
   // קישור למוצר (הרבה פריטים יכולים להצביע על אותו מוצר בעגלות שונות)
-  @ManyToOne(() => Product, { eager: true }) // eager: true מביא את פרטי המוצר אוטומטית כששולפים את הפריט
+   @ManyToOne(() => Product, { eager: true, onDelete: 'CASCADE' }) // eager: true מביא את פרטי המוצר אוטומטית כששולפים את הפריט
   product: Product;
 }

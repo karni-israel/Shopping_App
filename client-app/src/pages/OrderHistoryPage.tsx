@@ -65,11 +65,11 @@ export const OrderHistoryPage = () => {
       </div>
 
       {orders.length === 0 ? (
-        <p style={{ textAlign: 'center', fontSize: '1.2em', color: '#666' }}>עדיין לא ביצעת הזמנות.</p>
+        <p style={{ textAlign: 'center', fontSize: '1.2em', color: '#000000' }}>עדיין לא ביצעת הזמנות.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {orders.map((order) => (
-            <div key={order.id} style={{ border: '1px solid #ddd', borderRadius: '10px', padding: '20px', background: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', position: 'relative' }}>
+            <div key={order.id} style={{ border: '1px solid #dddddd', borderRadius: '10px', padding: '20px', background: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', position: 'relative' }}>
               <button 
                 onClick={() => deleteOrder(order.id)}
                 style={{ position: 'absolute', top: '10px', left: '10px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2em' }}

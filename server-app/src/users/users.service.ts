@@ -4,7 +4,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -66,11 +66,7 @@ export class UsersService {
 
     const savedUser = await this.usersRepository.save(newUser);
     
-    // --- התיקון כאן ---
-    // אנחנו מפרקים את savedUser: לוקחים את הסיסמה לצד אחד, ואת כל השאר ל-result
-    // אבל! בגלל שסוג ההחזרה הוא Promise<User>, השיטה הראשונה (any) קלה יותר למתחילים.
-    // אם אתה רוצה להשתמש בזה, תצטרך לשנות את ה-delete כמו בפתרון 1, או להחזיר טיפוס כללי.
-    
+   
     delete (savedUser as any).password; // הכי פשוט כרגע
     return savedUser;
   }

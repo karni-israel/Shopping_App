@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService} from '@nestjs/config'; // חובה עבור ה-.env
-import { AuthModule } from './auth/auth.module'; // המודול שבנינו
+import { ConfigModule, ConfigService} from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -14,7 +14,6 @@ import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
-    // הגדרת ConfigModule כגלובלי כדי שכל האפליקציה תכיר את ה-JWT_SECRET
     ConfigModule.forRoot({
       isGlobal: true, 
     }),
@@ -28,13 +27,16 @@ import { User } from './users/entities/user.entity';
         username: configService.get('DATABASE_USER') || 'postgres',
         password: configService.get('DATABASE_PASSWORD') || 'postgres',
         database: configService.get('DATABASE_NAME') || 'shopping_app',
-        // מונע מחיקת נתונים בסביבת ייצור (Production)
+        
+        // במצב פיתוח אנחנו משאירים את זה true כדי שיעדכן טבלאות, 
+        // אבל מחקתי את dropSchema כדי שלא ימחק נתונים!
         synchronize: configService.get('NODE_ENV') !== 'production',
+        
         logging: false,
         autoLoadEntities: true
       }),
-    }), // וודא שיש לך קובץ ormconfig.json או הגדרות מתאימות כאן
-    AuthModule, // הוספת מודול האימות
+    }),
+    AuthModule,
     UsersModule,
     CartModule,
     OrderModule,
