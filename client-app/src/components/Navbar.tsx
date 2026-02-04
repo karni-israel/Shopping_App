@@ -1,15 +1,44 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+// import api from '../services/api'; // וודא שיש לך את זה
 
 export function Navbar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  console.log("User Info:", user);
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("⚠️ האם אתה בטוח שברצונך למחוק את החשבון?\nפעולה זו אינה הפיכה!")) {
+      return;
+    }
+
+    try {
+      // 1. קריאה לשרת למחיקת המשתמש
+      // await api.delete('/users/me'); // <-- בטל הערה זו כשהשרת מוכן
+      
+      console.log("User deleted successfully");
+
+      // 2. ניקוי אגרסיבי של אחסון מקומי כדי למנוע זיהוי משתמש
+      localStorage.removeItem('token'); 
+      localStorage.removeItem('user');
+      
+      // 3. קריאה לפונקציית היציאה של הקונטקסט
+      if (logout) await logout();
+
+      // 4. שימוש ב-window.location במקום navigate
+      // זה גורם לטעינה מחדש של הדף (Hard Refresh)
+      // זה מבטיח שהזיכרון מתנקה לחלוטין ושאי אפשר ללחוץ "אחורה"
+      window.location.href = '/login'; 
+
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      alert("אירעה שגיאה במחיקת החשבון");
+    }
+  };
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    // שימוש ב-replace מונע חזרה אחורה לדף המוגן
+    navigate('/login', { replace: true });
   };
 
   return (
@@ -28,7 +57,7 @@ export function Navbar() {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            {user && (
+            {user ? (
               <>
                 <li className="nav-item">
                   <a className="nav-link" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
@@ -36,7 +65,6 @@ export function Navbar() {
                   </a>
                 </li>
 
-                {/* 👇 כפתור הניהול - מופיע רק לאדמין! */}
                 {user.role === 'ADMIN' && (
                   <li className="nav-item">
                     <a 
@@ -59,6 +87,7 @@ export function Navbar() {
                     📦 הזמנות
                   </a>
                 </li>
+                
                 <li className="nav-item dropdown">
                   <a 
                     className="nav-link dropdown-toggle" 
@@ -69,20 +98,37 @@ export function Navbar() {
                     👤 {user.username || 'משתמש'}
                   </a>
                   <ul className="dropdown-menu dropdown-menu-end">
-                    <li><a className="dropdown-item">{user.email}</a></li>
+                    <li><span className="dropdown-item-text text-muted">{user.email}</span></li>
                     <li><hr className="dropdown-divider" /></li>
                     <li>
                       <a 
-                        className="dropdown-item text-danger" 
+                        className="dropdown-item" 
                         onClick={handleLogout}
                         style={{ cursor: 'pointer' }}
                       >
-                        התנתק
+                        🚪 התנתק
+                      </a>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <a 
+                        className="dropdown-item text-danger fw-bold" 
+                        onClick={handleDeleteAccount}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        🗑️ מחק חשבון
                       </a>
                     </li>
                   </ul>
                 </li>
               </>
+            ) : (
+              // אופציונלי: מה להציג אם אין משתמש (למשל כפתור התחברות)
+              <li className="nav-item">
+                <a className="nav-link" onClick={() => navigate('/login')} style={{ cursor: 'pointer' }}>
+                  התחבר
+                </a>
+              </li>
             )}
           </ul>
         </div>

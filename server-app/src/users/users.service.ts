@@ -57,9 +57,9 @@ export class UsersService {
       throw new ConflictException('שם המשתמש כבר תפוס');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);// 10 סיבובים של salt
 
-    const newUser = this.usersRepository.create({
+    const newUser = this.usersRepository.create({ 
       ...createUserDto,
       password: hashedPassword,
     });
